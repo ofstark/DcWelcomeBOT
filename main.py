@@ -1,3 +1,4 @@
+import os
 import discord
 import asyncio
 import aiohttp
@@ -9,7 +10,13 @@ intents = discord.Intents.all()
 intents.members = True
 client = commands.Bot(command_prefix="!", intents=intents)
 
-CHANNEL_ID = 1524307065986744410  # Replace this with your channel ID
+TOKEN = os.getenv("DISCORD_TOKEN")
+CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID", "0"))
+
+if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN environment variable is not set.")
+if CHANNEL_ID <= 0:
+    raise RuntimeError("DISCORD_CHANNEL_ID environment variable is not set or invalid.")
 
 async def create_welcome_card(member: discord.Member) -> io.BytesIO:
     avatar_url = member.display_avatar.replace(size=1024, format="png").url
@@ -82,6 +89,6 @@ async def on_member_join(member):
 
 async def main():
     async with client:
-        await client.start("MTUyNDMxMTk4MzE4MzEwMTk5Mg.Gkihey.KTWxhQImJWgfK1fmA3070ZmZettrpIl9zJGb4o")
+        await client.start(TOKEN)
 
 asyncio.run(main())
